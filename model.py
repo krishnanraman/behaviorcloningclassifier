@@ -19,10 +19,10 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
 BATCHSIZE = 128
-WIDTH = 80
-HEIGHT = 30
+WIDTH = 64
+HEIGHT = 64
 
-CLASSLABELS = 36 # 360/36 =  10 degrees in one class 
+CLASSLABELS = 12 # 360/12 =  30 degrees in one class 
 CHANNELS = 3
 
 
