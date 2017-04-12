@@ -56,8 +56,7 @@ def preprocessImage(img):
 	img_yuv = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
 	img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
 	img_out = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
-	imgW, imgH = img_out.shape[1], img_out.shape[0]
-	crop_img = img[int(imgH/4.0):imgH, 0:imgW] # order of params y1:y2, x1:x2
+	crop_img = img[60:140:, :] # order of params y1:y2, x1:x2
 	return cv2.resize(crop_img, (WIDTH, HEIGHT))
 
 def flip(img):
