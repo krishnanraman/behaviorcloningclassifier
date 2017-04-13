@@ -56,7 +56,7 @@ def preprocessImage(img):
 	img_yuv = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
 	img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
 	img_out = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
-	crop_img = img_yuv[60:140:, :] # order of params y1:y2, x1:x2
+	crop_img = img_out[60:140:, :] # order of params y1:y2, x1:x2
 	return cv2.resize(crop_img, (WIDTH, HEIGHT))
 
 def flip(img):
@@ -229,7 +229,7 @@ def main(_):
 	# make sure model has been saved correctly, by reading back from it & using it for prediction
 	model2 = load_model("model.h5")
 	print("predictions from model2")
-	print(model2.predict(X_validation[0:10],batch_size=10))
+	print(model2.predict(X_validation,batch_size=len(X_validation)))
 
 if __name__ == '__main__':
   tf.app.run()
