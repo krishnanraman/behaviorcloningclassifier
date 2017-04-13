@@ -10,7 +10,6 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.models import load_model
 from keras.utils import np_utils
 import h5py
-import math
 
 import glob
 import numpy as np
@@ -18,12 +17,13 @@ import numpy as np
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
+EPOCHS = 10
 BATCHSIZE = 128
 WIDTH = 64
 HEIGHT = 64
-
 CLASSLABELS = 12 # 360/12 =  30 degrees in one class 
 CHANNELS = 3
+VALIDATION_SET_SIZE = 0.1 #10% of data for validation
 
 
 #convert a camera angle, ie. a float between -1 to 1, to a class label c
@@ -56,7 +56,7 @@ def preprocessImage(img):
 	img_yuv = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
 	img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
 	img_out = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
-	crop_img = img[60:140:, :] # order of params y1:y2, x1:x2
+	crop_img = img_yuv[60:140:, :] # order of params y1:y2, x1:x2
 	return cv2.resize(crop_img, (WIDTH, HEIGHT))
 
 def flip(img):
@@ -64,7 +64,7 @@ def flip(img):
 
 def randomBrightness(image):
     hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-    rand = np.random.uniform(0.2,0.8)
+    rand = np.random.uniform(0.2,1.0)
     hsv[:,:,2] = rand*hsv[:,:,2]
     return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
@@ -176,13 +176,13 @@ def generator_training(x,y):
 			batch_angle[i] = label
 
 			# flip the image with 50% probability
-			if  np.random.random(1)[0] < 0.5: 	       	
-				imgflipped = flip(img)	
+			#if  np.random.random(1)[0] < 0.5: 	       	
+			#	imgflipped = flip(img)	
 				# mirror reflection = flip around y axis, steering angle inverts
-				flippedlabel = cameraToClassLabel(-classLabelToCamera(label)) #clever way to invert 
+			#	flippedlabel = cameraToClassLabel(-classLabelToCamera(label)) #clever way to invert 
 				
-				batch_train[i] = imgflipped
-				batch_angle[i] = flippedlabel
+			#	batch_train[i] = imgflipped
+			#	batch_angle[i] = flippedlabel
 				#print(label, "=>", flippedlabel)
 
 			# alter brightness of the image with 50% probability
@@ -213,7 +213,7 @@ def main(_):
 
 	#shuffle the training set, split into train & validation using sklearn api
 	X, y = shuffle(X,y)
-	X_train, X_validation, y_train, y_validation = train_test_split(X,y, test_size = 0.10, random_state = 100)
+	X_train, X_validation, y_train, y_validation = train_test_split(X,y, test_size = VALIDATION_SET_SIZE, random_state = 100)
 	print("Training Set size: ", len(X_train), "Validation set size: ", len(X_validation))
 
 	trainingGen = generator_training(X_train, y_train)
@@ -222,14 +222,14 @@ def main(_):
 	# make keras model, train & save
 	model = makeModel() # model built based on the number of class labels
 	model.compile('adam', 'categorical_crossentropy', ['accuracy'])
-	model.fit_generator(trainingGen, samples_per_epoch = math.ceil(len(X_train)), nb_epoch=50, validation_data = validationGen, nb_val_samples = len(X_validation))
+	model.fit_generator(trainingGen, nb_epoch=EPOCHS, samples_per_epoch = len(X_train), validation_data = validationGen,  nb_val_samples = len(X_validation))
 	print('Done Training')
 	saveModel(model)
 
 	# make sure model has been saved correctly, by reading back from it & using it for prediction
 	model2 = load_model("model.h5")
 	print("predictions from model2")
-	print(model2.predict(X_validation[0:10],BATCHSIZE=10))
+	print(model2.predict(X_validation[0:10],batch_size=10))
 
 if __name__ == '__main__':
   tf.app.run()
