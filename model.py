@@ -21,7 +21,8 @@ EPOCHS = 10
 BATCHSIZE = 128
 WIDTH = 64
 HEIGHT = 64
-CLASSLABELS = 12 # 360/12 =  30 degrees in one class 
+CLASSLABELS = 25 # 360/12 =  30 degrees in one class 
+d = 0.04
 CHANNELS = 3
 VALIDATION_SET_SIZE = 0.1 #10% of data for validation
 
@@ -29,11 +30,19 @@ VALIDATION_SET_SIZE = 0.1 #10% of data for validation
 #convert a camera angle, ie. a float between -1 to 1, to a class label c
 # camera angles between -1 & +1, we split this range into 40 discrete buckets
 def cameraToClassLabel(x):
-    return int((x+1)*(CLASSLABELS-1)/2)
+	ans = 0
+	for i in range(0,CLASSLABELS):
+		if (-1 + 2*i*d ) <= x and x < (-1 + 2*i*d + 2*d ):
+			ans = i
+
+	#special case
+	if x == 1:
+		ans = 24
+	return ans
 
 # convert the class label back to camera angle
 def classLabelToCamera(x):
-	return float(2*x/(CLASSLABELS-1) - 1)
+	return -1 + d + 2*x*d
 
 def makeModel():
 	model = Sequential()
