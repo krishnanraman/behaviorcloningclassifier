@@ -25,8 +25,8 @@ prev_image_array = None
 
 WIDTH = 64
 HEIGHT = 64
-CLASSLABELS = 12 # 360/12 =  30 degrees in one class 
-CHANNELS = 3
+CLASSLABELS = 125 # 360/12 =  30 degrees in one class 
+d = 0.008 # 1/CLASSLABELS
 
 
 class SimplePIController:
@@ -62,9 +62,22 @@ def preprocessImage(img):
     crop_img = img_yuv[60:140:, :] # order of params y1:y2, x1:x2
     return cv2.resize(crop_img, (WIDTH, HEIGHT))
 
+#convert a camera angle, ie. a float between -1 to 1, to a class label c
+# camera angles between -1 & +1, we split this range into 40 discrete buckets
+def cameraToClassLabel(x):
+    ans = 0
+    for i in range(0,CLASSLABELS):
+        if (-1 + 2*i*d ) <= x and x < (-1 + 2*i*d + 2*d ):
+            ans = i
+
+    #special case
+    if x == 1:
+        ans = CLASSLABELS - 1
+    return ans
+
 # convert the class label back to camera angle
 def classLabelToCamera(x):
-    return (2*x/(CLASSLABELS-1) - 1) # + (np.random.random_sample() * 2/24)
+    return -1 + d + 2*x*d
 
 @sio.on('telemetry')
 def telemetry(sid, data):

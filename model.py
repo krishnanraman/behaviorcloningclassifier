@@ -17,12 +17,12 @@ import numpy as np
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
-EPOCHS = 10
+EPOCHS = 2
 BATCHSIZE = 128
 WIDTH = 64
 HEIGHT = 64
-CLASSLABELS = 25 # 360/12 =  30 degrees in one class 
-d = 0.04
+CLASSLABELS = 125 # 360/12 =  30 degrees in one class 
+d = 0.008 # 1/CLASSLABELS
 CHANNELS = 3
 VALIDATION_SET_SIZE = 0.1 #10% of data for validation
 
@@ -37,7 +37,7 @@ def cameraToClassLabel(x):
 
 	#special case
 	if x == 1:
-		ans = 24
+		ans = CLASSLABELS - 1
 	return ans
 
 # convert the class label back to camera angle
@@ -174,6 +174,8 @@ def makeDataset(image_camera):
 def generator_training(x,y):
 	batch_train = np.zeros((BATCHSIZE, HEIGHT, WIDTH, CHANNELS), dtype = np.float32)
 	batch_angle = np.zeros((BATCHSIZE), dtype = np.uint8)
+
+	centerLabel = cameraToClassLabel(0.0)
 	while True:
 		data, angle = shuffle(x,y)
 		for i in range(BATCHSIZE):
@@ -184,18 +186,18 @@ def generator_training(x,y):
 			batch_train[i] = img
 			batch_angle[i] = label
 
-			# flip the image with 50% probability
-			#if  np.random.random(1)[0] < 0.5: 	       	
-			#	imgflipped = flip(img)	
+			# flip the image with 50% probability if camera angle is nonzero
+			if  (label != centerLabel) and (np.random.random(1)[0] < 0.5): 	       	
+				imgflipped = flip(img)	
 				# mirror reflection = flip around y axis, steering angle inverts
-			#	flippedlabel = cameraToClassLabel(-classLabelToCamera(label)) #clever way to invert 
+				flippedlabel = cameraToClassLabel(-classLabelToCamera(label)) #clever way to invert 
 				
-			#	batch_train[i] = imgflipped
-			#	batch_angle[i] = flippedlabel
+				batch_train[i] = imgflipped
+				batch_angle[i] = flippedlabel
 				#print(label, "=>", flippedlabel)
 
 			# alter brightness of the image with 50% probability
-			if  np.random.random(1)[0] < 0.5: 	       	
+			elif  np.random.random(1)[0] < 0.5: 	       	
 				batch_train[i] = randomBrightness(batch_train[i])
 
 		yield batch_train, np_utils.to_categorical(batch_angle, CLASSLABELS)  # NOTE we have to convert 128x1 tro 128x36 so labels havea cardinality
@@ -219,6 +221,9 @@ def main(_):
 	# gather the features & labels
 	X, y = makeDataset(image_camera)
 	print(len(np.unique(y)), " unique class labels")
+
+	hist = np.histogram(y, np.arange(CLASSLABELS))
+	print(hist)
 
 	#shuffle the training set, split into train & validation using sklearn api
 	X, y = shuffle(X,y)
