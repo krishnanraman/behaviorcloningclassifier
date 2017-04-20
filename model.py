@@ -23,8 +23,10 @@ HEIGHT = 64
 CHANNELS = 3
 VALIDATION_SET_SIZE = 0.1 #10% of data for validation
 
-classes = [[-1,-0.5],
-[-0.5,-0.2],
+classes = [[-1.001,-0.8],
+[-0.8,-0.6],
+[-0.6,-0.4],
+[-0.4,-0.2],
 [-0.2,-0.1],
 [-0.1,-0.08],
 [-0.08,-0.06],
@@ -38,8 +40,10 @@ classes = [[-1,-0.5],
 [0.06,0.08],
 [0.08,0.1],
 [0.1,0.2],
-[0.2,0.5],
-[0.5,1.0]]
+[0.2,0.4],
+[0.4,0.6],
+[0.6,0.8],
+[0.8,1.0001]]
 CLASSLABELS = len(classes)
 
 #convert a camera angle, ie. a float between -1 to 1, to a class label c
@@ -50,11 +54,6 @@ def cameraToClassLabel(x):
 		boundary = classes[i]
 		if (boundary[0] <= x) and (x < boundary[1]):
 			ans = i
-
-	#special case
-	if x == 1:
-		ans = CLASSLABELS - 1
-
 	return ans
 
 # convert the class label back to camera angle
