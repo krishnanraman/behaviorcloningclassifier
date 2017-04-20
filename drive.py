@@ -25,8 +25,34 @@ prev_image_array = None
 
 WIDTH = 64
 HEIGHT = 64
-CLASSLABELS = 125 # 360/12 =  30 degrees in one class 
-d = 0.008 # 1/CLASSLABELS
+CHANNELS = 3
+classes = [[-1.001,-0.8],
+[-0.8,-0.6],
+[-0.6,-0.4],
+[-0.4,-0.2],
+[-0.2,-0.1],
+[-0.1,-0.08],
+[-0.08,-0.06],
+[-0.06,-0.04],
+[-0.04,-0.02],
+[-0.02,-0.001],
+[-0.001,0.001],
+[0.001,0.02],
+[0.02,0.04],
+[0.04,0.06],
+[0.06,0.08],
+[0.08,0.1],
+[0.1,0.2],
+[0.2,0.4],
+[0.4,0.6],
+[0.6,0.8],
+[0.8,1.0001]]
+CLASSLABELS = len(classes)
+
+# convert the class label back to camera angle
+def classLabelToCamera(i):
+    boundary = classes[i]
+    return (boundary[0] + boundary[1])/2.0
 
 
 class SimplePIController:
@@ -51,33 +77,12 @@ class SimplePIController:
 
 
 controller = SimplePIController(0.1, 0.002)
-set_speed = 9
+set_speed = 10
 controller.set_desired(set_speed)
 
 def preprocessImage(img):
-    # input is a BGR image from cv2.imrrad
-    img_yuv = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
-    img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
-    img_out = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
-    crop_img = img_yuv[60:140:, :] # order of params y1:y2, x1:x2
+    crop_img = img[60:140:, :] # order of params y1:y2, x1:x2
     return cv2.resize(crop_img, (WIDTH, HEIGHT))
-
-#convert a camera angle, ie. a float between -1 to 1, to a class label c
-# camera angles between -1 & +1, we split this range into 40 discrete buckets
-def cameraToClassLabel(x):
-    ans = 0
-    for i in range(0,CLASSLABELS):
-        if (-1 + 2*i*d ) <= x and x < (-1 + 2*i*d + 2*d ):
-            ans = i
-
-    #special case
-    if x == 1:
-        ans = CLASSLABELS - 1
-    return ans
-
-# convert the class label back to camera angle
-def classLabelToCamera(x):
-    return -1 + d + 2*x*d
 
 @sio.on('telemetry')
 def telemetry(sid, data):
@@ -101,18 +106,11 @@ def telemetry(sid, data):
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         img = np.asarray(image)
-        print("speed", speed, "throttle", throttle, "steer", steering_angle)
         image_array = preprocessImage(img)
         res = model.predict(image_array[None, :, :, :], batch_size=1)
-        print(res)
         classLabel = np.argmax(res)
-        print("BEFORE", classLabel)
         steering_angle = classLabelToCamera(classLabel)
-        print("AFTER speed", speed, "throttle", throttle, "steer", steering_angle)
-
-        #print(steering_angle, throttle, speed)
         throttle = controller.update(float(speed))
-
         print(steering_angle, throttle)
         send_control(steering_angle, throttle)
 
