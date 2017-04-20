@@ -26,8 +26,10 @@ prev_image_array = None
 WIDTH = 64
 HEIGHT = 64
 CHANNELS = 3
-classes = [[-1,-0.5],
-[-0.5,-0.2],
+classes = [[-1.001,-0.8],
+[-0.8,-0.6],
+[-0.6,-0.4],
+[-0.4,-0.2],
 [-0.2,-0.1],
 [-0.1,-0.08],
 [-0.08,-0.06],
@@ -41,8 +43,10 @@ classes = [[-1,-0.5],
 [0.06,0.08],
 [0.08,0.1],
 [0.1,0.2],
-[0.2,0.5],
-[0.5,1.0]]
+[0.2,0.4],
+[0.4,0.6],
+[0.6,0.8],
+[0.8,1.0001]]
 CLASSLABELS = len(classes)
 
 # convert the class label back to camera angle
@@ -73,7 +77,7 @@ class SimplePIController:
 
 
 controller = SimplePIController(0.1, 0.002)
-set_speed = 9
+set_speed = 10
 controller.set_desired(set_speed)
 
 def preprocessImage(img):
