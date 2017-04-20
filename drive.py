@@ -25,8 +25,40 @@ prev_image_array = None
 
 WIDTH = 64
 HEIGHT = 64
-CLASSLABELS = 12 # 360/12 =  30 degrees in one class 
 CHANNELS = 3
+classes = [
+[-1,-0.5],
+[-0.5,-0.2],
+[-0.2,-0.1],
+[-0.1,-0.09],
+[-0.09,-0.08],
+[-0.09,-0.07],
+[-0.07,-0.06],
+[-0.06,-0.05],
+[-0.05,-0.04],
+[-0.04,-0.03],
+[-0.03,-0.02],
+[-0.02,0.01],
+[-0.01,0.01],
+[0.01,0.02],
+[0.02,0.03],
+[0.03,0.04],
+[0.04,0.05],
+[0.05,0.06],
+[0.06,0.07],
+[0.07,0.08],
+[0.08,0.09],
+[0.09,0.1],
+[0.1,0.2],
+[0.2,0.5],
+[0.5,1.0]
+]
+CLASSLABELS = len(classes)
+
+# convert the class label back to camera angle
+def classLabelToCamera(i):
+    boundary = classes[i]
+    return (boundary[0] + boundary[1])/2.0
 
 
 class SimplePIController:
@@ -55,16 +87,8 @@ set_speed = 9
 controller.set_desired(set_speed)
 
 def preprocessImage(img):
-    # input is a BGR image from cv2.imrrad
-    img_yuv = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
-    img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
-    img_out = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
-    crop_img = img_yuv[60:140:, :] # order of params y1:y2, x1:x2
+    crop_img = img[60:140:, :] # order of params y1:y2, x1:x2
     return cv2.resize(crop_img, (WIDTH, HEIGHT))
-
-# convert the class label back to camera angle
-def classLabelToCamera(x):
-    return (2*x/(CLASSLABELS-1) - 1) # + (np.random.random_sample() * 2/24)
 
 @sio.on('telemetry')
 def telemetry(sid, data):
@@ -88,18 +112,11 @@ def telemetry(sid, data):
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         img = np.asarray(image)
-        print("speed", speed, "throttle", throttle, "steer", steering_angle)
         image_array = preprocessImage(img)
         res = model.predict(image_array[None, :, :, :], batch_size=1)
-        print(res)
         classLabel = np.argmax(res)
-        print("BEFORE", classLabel)
         steering_angle = classLabelToCamera(classLabel)
-        print("AFTER speed", speed, "throttle", throttle, "steer", steering_angle)
-
-        #print(steering_angle, throttle, speed)
         throttle = controller.update(float(speed))
-
         print(steering_angle, throttle)
         send_control(steering_angle, throttle)
 
