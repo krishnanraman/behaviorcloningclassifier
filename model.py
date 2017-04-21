@@ -28,7 +28,8 @@ classes = [
 [-0.8,-0.6],
 [-0.6,-0.4],
 [-0.4,-0.2],
-[-0.2,-0.08],
+[-0.2,-0.1],
+[-0.1,-0.08],
 [-0.08,-0.06],
 [-0.06,-0.04],
 [-0.04,-0.02],
@@ -38,7 +39,8 @@ classes = [
 [0.02,0.04],
 [0.04,0.06],
 [0.06,0.08],
-[0.08,0.2],
+[0.08,0.1],
+[0.1,0.2],
 [0.2,0.4],
 [0.4,0.6],
 [0.6,0.8],
@@ -115,6 +117,11 @@ def adjust(angle, adjustment):
     pass
   return a
 
+def flip(image, angle):
+  new_image = cv2.flip(image,1)
+  new_angle = angle*(-1)
+  return new_image, new_angle
+
 def makeImageMap():
   # make a map of image name vs class label
   image_camera = {}
@@ -132,7 +139,6 @@ def makeImageMap():
       image_camera["udacitydataset/"+ cols[1].strip()]  = camera
       image_camera[ "udacitydataset/"+ cols[2].strip()] = camera
 
-  print("Read ", len(image_camera), "lines")
   return image_camera
 
 def makeDataset(image_camera):
@@ -143,8 +149,10 @@ def makeDataset(image_camera):
   print(numImages, "number of images")
 
   #populate the images & class labels
-  X_sim = []
-  y_sim = []
+  X_zero = []
+  y_zero = []
+  X_nonzero = []
+  y_nonzero= []
   adjustment = 0.27
 
   i = numImages - 1
@@ -158,8 +166,16 @@ def makeDataset(image_camera):
       leftName = name.replace("center", "left")
       rightName = name.replace("center", "right")
 
-      X_sim.append( img )
-      y_sim.append( myangle)
+      if myangle == 0.0:
+        X_zero.append( img )
+        y_zero.append( myangle)
+
+      else:
+        X_nonzero.append( img )
+        y_nonzero.append( myangle)
+        i2,a2 = flip(img,myangle)
+        X_nonzero.append( i2 )
+        y_nonzero.append( a2 )
 
       if image_camera.get(leftName) != None:
         # have left & right images
@@ -169,27 +185,38 @@ def makeDataset(image_camera):
           leftImg = preprocessImage(mpimg.imread(leftName))
           leftangle = adjust( myangle, adjustment)  # HARDER RIGHT TURN
       
-          X_sim.append( leftImg )
-          y_sim.append( leftangle)
+          X_nonzero.append( leftImg )
+          y_nonzero.append( leftangle)
 
         elif myangle < -0.15: #LEFT TURN
 
           rightImg = preprocessImage(mpimg.imread(rightName))
           rightangle = adjust(myangle, -adjustment) # HARDER LEFT TURN
         
-          X_sim.append( rightImg )
-          y_sim.append( rightangle)
+          X_nonzero.append( rightImg )
+          y_nonzero.append( rightangle)
 
     #shuffle the training set, split into train & validation using sklearn api
-  X_shuff, y_shuff = shuffle(X_sim,y_sim)
-  y_encoded = []
-  for yi in y_shuff:
+  X_shuffz, y_shuffz = shuffle(X_zero,y_zero)
+  X_shuffnz, y_shuffnz = shuffle(X_nonzero,y_nonzero)
+  print("Zeros size: ", len(X_shuffz), "Nonzeros: ", len(X_shuffnz))
+
+  y_encodedz = []
+  for yi in y_shuffz:
     label = cameraToClassLabel(yi)
     arr = np.zeros(CLASSLABELS)
     arr[label] = 1
-    y_encoded.append(arr)
+    y_encodedz.append(arr)
 
-  return np.array(X_shuff),np.array(y_encoded)
+  y_encodednz = []
+  for yi in y_shuffnz:
+    label = cameraToClassLabel(yi)
+    arr = np.zeros(CLASSLABELS)
+    arr[label] = 1
+    y_encodednz.append(arr)
+
+
+  return np.array(X_shuffz),np.array(y_encodedz), np.array(X_shuffnz),np.array(y_encodednz)
 
 def main(_):
 
@@ -201,7 +228,6 @@ def main(_):
         height_shift_range=0.2,
         shear_range=0.2,
         zoom_range=0.2,
-        horizontal_flip=True,
         fill_mode='nearest')
   test_datagen = ImageDataGenerator()
 
@@ -209,7 +235,22 @@ def main(_):
   image_camera = makeImageMap()
 
   # gather the features & labels
-  X, y = makeDataset(image_camera)
+  Xz, yz, Xnz, ynz = makeDataset(image_camera)
+  print("Zeros size: ", len(Xz), "Nonzeros: ", len(Xnz))
+  X = []
+  y = []
+
+  # throw most of zeros 
+  for i in range(0,500):
+    X.append(Xz[i])
+    y.append(yz[i])
+
+  for i in range(0,len(Xnz)):
+    X.append(Xnz[i])
+    y.append(ynz[i])
+
+  X,y = shuffle(np.array(X), np.array(y))
+
   X_train, X_validation, y_train, y_validation = train_test_split(X,y, test_size = VALIDATION_SET_SIZE, random_state = 100)
   print("Training Set size: ", len(X_train), "Validation set size: ", len(X_validation))
 
