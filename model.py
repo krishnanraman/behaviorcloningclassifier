@@ -48,8 +48,7 @@ classes = [
 ]
 CLASSLABELS = len(classes)
 
-#convert a camera angle, ie. a float between -1 to 1, to a class label c
-# camera angles between -1 & +1, we split this range into 40 discrete buckets
+#convert a camera angle to a class label
 def cameraToClassLabel(x):
   ans = 0
   for i in range(0,CLASSLABELS):
@@ -146,7 +145,6 @@ def makeDataset(image_camera):
   # read images from my training set & from udacity's training set
   images = glob.glob("udacitydataset/IMG/*.jpg")
   numImages = len(images)
-  print(numImages, "number of images")
 
   #populate the images & class labels
   X_zero = []
@@ -155,7 +153,6 @@ def makeDataset(image_camera):
   y_nonzero= []
   adjustment = 0.27
 
-  i = numImages - 1
   for name in images:
     if name.find("center") != -1:  # this is a center image
       
@@ -199,7 +196,6 @@ def makeDataset(image_camera):
     #shuffle the training set, split into train & validation using sklearn api
   X_shuffz, y_shuffz = shuffle(X_zero,y_zero)
   X_shuffnz, y_shuffnz = shuffle(X_nonzero,y_nonzero)
-  print("Zeros size: ", len(X_shuffz), "Nonzeros: ", len(X_shuffnz))
 
   y_encodedz = []
   for yi in y_shuffz:
@@ -236,15 +232,15 @@ def main(_):
 
   # gather the features & labels
   Xz, yz, Xnz, ynz = makeDataset(image_camera)
-  print("Zeros size: ", len(Xz), "Nonzeros: ", len(Xnz))
   X = []
   y = []
 
-  # throw most of zeros 
+  # zeros are over-represented. Throw most of zeros out. Keep only 500 of the 4000+ zeros
   for i in range(0,500):
     X.append(Xz[i])
     y.append(yz[i])
-
+    
+  # keep all the nonzeros
   for i in range(0,len(Xnz)):
     X.append(Xnz[i])
     y.append(ynz[i])

@@ -1,0 +1,108 @@
+(carnd-term1) krishnan@ml:~/workspace/behaviorcloningclassifier$ KERAS_BACKEND=tensorflow python model.py
+Using TensorFlow backend.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+lambda_1 (Lambda)            (None, 64, 64, 3)         0         
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, 62, 62, 32)        896       
+_________________________________________________________________
+activation_1 (Activation)    (None, 62, 62, 32)        0         
+_________________________________________________________________
+max_pooling2d_1 (MaxPooling2 (None, 31, 31, 32)        0         
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 29, 29, 64)        18496     
+_________________________________________________________________
+activation_2 (Activation)    (None, 29, 29, 64)        0         
+_________________________________________________________________
+max_pooling2d_2 (MaxPooling2 (None, 14, 14, 64)        0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 12544)             0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                802880    
+_________________________________________________________________
+activation_3 (Activation)    (None, 64)                0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 21)                1365      
+_________________________________________________________________
+activation_4 (Activation)    (None, 21)                0         
+=================================================================
+Total params: 823,637.0
+Trainable params: 823,637.0
+Non-trainable params: 0.0
+_________________________________________________________________
+Training Set size:  8410 Validation set size:  935
+Epoch 1/25
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE3 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
+262/262 [==============================] - 53s - loss: 2.8050 - acc: 0.1294 - val_loss: 2.7078 - val_acc: 0.1627
+Epoch 2/25
+262/262 [==============================] - 55s - loss: 2.6738 - acc: 0.1526 - val_loss: 2.5031 - val_acc: 0.2082
+Epoch 3/25
+262/262 [==============================] - 53s - loss: 2.5596 - acc: 0.1834 - val_loss: 2.4020 - val_acc: 0.2503
+Epoch 4/25
+262/262 [==============================] - 53s - loss: 2.4584 - acc: 0.2101 - val_loss: 2.2588 - val_acc: 0.2614
+Epoch 5/25
+262/262 [==============================] - 56s - loss: 2.3978 - acc: 0.2250 - val_loss: 2.2705 - val_acc: 0.2558
+Epoch 6/25
+262/262 [==============================] - 53s - loss: 2.3569 - acc: 0.2314 - val_loss: 2.1792 - val_acc: 0.2636
+Epoch 7/25
+262/262 [==============================] - 56s - loss: 2.3188 - acc: 0.2424 - val_loss: 2.2287 - val_acc: 0.2669
+Epoch 8/25
+262/262 [==============================] - 55s - loss: 2.3115 - acc: 0.2461 - val_loss: 2.1779 - val_acc: 0.2935
+Epoch 9/25
+262/262 [==============================] - 54s - loss: 2.2888 - acc: 0.2582 - val_loss: 2.1738 - val_acc: 0.3068
+Epoch 10/25
+262/262 [==============================] - 52s - loss: 2.2611 - acc: 0.2693 - val_loss: 2.1205 - val_acc: 0.3278
+Epoch 11/25
+262/262 [==============================] - 52s - loss: 2.2521 - acc: 0.2799 - val_loss: 2.1171 - val_acc: 0.3362
+Epoch 12/25
+262/262 [==============================] - 54s - loss: 2.2294 - acc: 0.2909 - val_loss: 2.0912 - val_acc: 0.3477
+Epoch 13/25
+262/262 [==============================] - 55s - loss: 2.2184 - acc: 0.2936 - val_loss: 2.0950 - val_acc: 0.3378
+Epoch 14/25
+262/262 [==============================] - 54s - loss: 2.2153 - acc: 0.2978 - val_loss: 2.0050 - val_acc: 0.3677
+Epoch 15/25
+262/262 [==============================] - 54s - loss: 2.2007 - acc: 0.3035 - val_loss: 2.0333 - val_acc: 0.3533
+Epoch 16/25
+262/262 [==============================] - 55s - loss: 2.2025 - acc: 0.3052 - val_loss: 2.0728 - val_acc: 0.3654
+Epoch 17/25
+262/262 [==============================] - 53s - loss: 2.1955 - acc: 0.3068 - val_loss: 2.0696 - val_acc: 0.3499
+Epoch 18/25
+262/262 [==============================] - 53s - loss: 2.1836 - acc: 0.3034 - val_loss: 2.0310 - val_acc: 0.3621
+Epoch 19/25
+262/262 [==============================] - 54s - loss: 2.1643 - acc: 0.3131 - val_loss: 1.9856 - val_acc: 0.3732
+Epoch 20/25
+262/262 [==============================] - 51s - loss: 2.1866 - acc: 0.3091 - val_loss: 2.0812 - val_acc: 0.3533
+Epoch 21/25
+262/262 [==============================] - 52s - loss: 2.1764 - acc: 0.3125 - val_loss: 2.0306 - val_acc: 0.3524
+Epoch 22/25
+262/262 [==============================] - 52s - loss: 2.1651 - acc: 0.3153 - val_loss: 2.0405 - val_acc: 0.3854
+Epoch 23/25
+262/262 [==============================] - 53s - loss: 2.1548 - acc: 0.3204 - val_loss: 2.0222 - val_acc: 0.3533
+Epoch 24/25
+262/262 [==============================] - 52s - loss: 2.1810 - acc: 0.3148 - val_loss: 1.9970 - val_acc: 0.3577
+Epoch 25/25
+262/262 [==============================] - 54s - loss: 2.1506 - acc: 0.3196 - val_loss: 1.9894 - val_acc: 0.3721
+Done Training
+predictions from model2
+[[  5.83335338e-03   5.32780401e-02   1.40128717e-01 ...,   1.32488282e-02
+    9.95648210e-04   3.38804421e-05]
+ [  4.04253107e-04   1.34445564e-03   1.77960116e-02 ...,   2.17722550e-01
+    1.64263949e-01   2.48296559e-02]
+ [  7.89204714e-05   7.09347874e-02   1.80265859e-01 ...,   9.12115411e-06
+    1.24532953e-08   1.88689139e-13]
+ ..., 
+ [  5.08284529e-06   5.31032747e-05   2.72659003e-03 ...,   1.96555093e-01
+    1.02055237e-01   3.02087609e-03]
+ [  1.18359600e-13   2.46087539e-10   1.57030104e-06 ...,   1.53711941e-02
+    2.21374445e-03   3.65846887e-07]
+ [  6.66090724e-11   8.34085583e-08   5.39715402e-05 ...,   3.67178861e-03
+    1.01088379e-04   3.38354944e-08]]
+(carnd-term1) krishnan@ml:~/workspace/behaviorcloningclassifier$ 
