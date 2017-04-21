@@ -26,12 +26,12 @@ prev_image_array = None
 WIDTH = 64
 HEIGHT = 64
 CHANNELS = 3
-classes = [[-1.001,-0.8],
+classes = [
+[-1.001,-0.8],
 [-0.8,-0.6],
 [-0.6,-0.4],
 [-0.4,-0.2],
-[-0.2,-0.1],
-[-0.1,-0.08],
+[-0.2,-0.08],
 [-0.08,-0.06],
 [-0.06,-0.04],
 [-0.04,-0.02],
@@ -41,18 +41,21 @@ classes = [[-1.001,-0.8],
 [0.02,0.04],
 [0.04,0.06],
 [0.06,0.08],
-[0.08,0.1],
-[0.1,0.2],
+[0.08,0.2],
 [0.2,0.4],
 [0.4,0.6],
 [0.6,0.8],
-[0.8,1.0001]]
+[0.8,1.001],
+]
 CLASSLABELS = len(classes)
 
 # convert the class label back to camera angle
 def classLabelToCamera(i):
     boundary = classes[i]
-    return (boundary[0] + boundary[1])/2.0
+    noise = 0 #np.random.uniform(0, (boundary[1] - boundary[0])/10.0)
+    if np.random.random() < 0.5:
+        noise = -noise
+    return noise  + (boundary[0] + boundary[1])/2.0
 
 
 class SimplePIController:
@@ -89,18 +92,13 @@ def telemetry(sid, data):
     if data:
         # The current steering angle of the car
         steering_angle = data["steering_angle"]
-        steering_angle = steering_angle.replace(",", ".")
-        steering_angle = float(steering_angle )
+        print("orig", steering_angle)
 
         # The current throttle of the car
         throttle = data["throttle"]
-        throttle = throttle.replace(",", ".")
-        throttle = float(throttle )
 
         # The current speed of the car
         speed = data["speed"]
-        speed = speed.replace(",", ".")
-        speed = float(speed )
 
         # The current image from the center camera of the car
         imgString = data["image"]
@@ -112,7 +110,7 @@ def telemetry(sid, data):
         steering_angle = classLabelToCamera(classLabel)
         throttle = controller.update(float(speed))
         print(steering_angle, throttle)
-        send_control(steering_angle, throttle)
+        send_control(steering_angle.__str__(), throttle.__str__())
 
         # save frame
         if args.image_folder != '':
@@ -134,8 +132,8 @@ def send_control(steering_angle, throttle):
     sio.emit(
         "steer",
         data={
-            'steering_angle': steering_angle.__str__().replace(".",","),
-            'throttle': throttle.__str__().replace(".",",")
+            'steering_angle': steering_angle.__str__(),
+            'throttle': throttle.__str__()
         },
         skip_sid=True)
 

@@ -1,5 +1,5 @@
 import cv2
-
+import sys
 import matplotlib.image as mpimg
 import tensorflow as tf
 
@@ -23,12 +23,12 @@ HEIGHT = 64
 CHANNELS = 3
 VALIDATION_SET_SIZE = 0.1 #10% of data for validation
 
-classes = [[-1.001,-0.8],
+classes = [
+[-1.001,-0.8],
 [-0.8,-0.6],
 [-0.6,-0.4],
 [-0.4,-0.2],
-[-0.2,-0.1],
-[-0.1,-0.08],
+[-0.2,-0.08],
 [-0.08,-0.06],
 [-0.06,-0.04],
 [-0.04,-0.02],
@@ -38,12 +38,12 @@ classes = [[-1.001,-0.8],
 [0.02,0.04],
 [0.04,0.06],
 [0.06,0.08],
-[0.08,0.1],
-[0.1,0.2],
+[0.08,0.2],
 [0.2,0.4],
 [0.4,0.6],
 [0.6,0.8],
-[0.8,1.001]]
+[0.8,1.001],
+]
 CLASSLABELS = len(classes)
 
 #convert a camera angle, ie. a float between -1 to 1, to a class label c
@@ -77,15 +77,8 @@ def makeModel():
 
   model = Sequential()
   model.add(Lambda(lambda x: x/255 - 0.5, input_shape = input_shape))
-  model.add(Conv2D(16, (3, 3)))
-  model.add(Activation('relu'))
-  model.add(MaxPooling2D(pool_size=(2, 2)))
 
   model.add(Conv2D(32, (3, 3)))
-  model.add(Activation('relu'))
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-
-  model.add(Conv2D(48, (3, 3)))
   model.add(Activation('relu'))
   model.add(MaxPooling2D(pool_size=(2, 2)))
 
@@ -126,16 +119,6 @@ def makeImageMap():
   # make a map of image name vs class label
   image_camera = {}
 
-  # open the driving log & read all lines
-  myfile = open('mydataset/driving_log.csv') # This is the datafile I generated from my simulations
-  lines = myfile.read().split("\n")
-
-  # read line by line & populate the map
-  for line in lines:
-      cols = line.split(",")  
-      camera = float(cols[3])     #extract the camera angle
-      image_camera["mydataset/"+ cols[0].strip()] = camera
-
   myfile = open('udacitydataset/driving_log.csv') # This is the datafile provided by udacity
   lines = myfile.read().split("\n")
 
@@ -156,7 +139,6 @@ def makeDataset(image_camera):
 
   # read images from my training set & from udacity's training set
   images = glob.glob("udacitydataset/IMG/*.jpg")
-  images.extend(glob.glob("mydataset/IMG/*.jpg"))
   numImages = len(images)
   print(numImages, "number of images")
 
@@ -234,7 +216,12 @@ def main(_):
   train_generator = train_datagen.flow(X_train,y_train)
   validation_generator = test_datagen.flow(X_validation,y_validation)
 
-  model.fit_generator(train_generator, steps_per_epoch = int(len(X_train)/32), epochs=25, verbose=1,validation_data =validation_generator, validation_steps= int(len(X_validation)/32), workers=10)
+  if len(sys.argv) > 1:
+    E = int(sys.argv[1])
+  else:
+    E = 25
+
+  model.fit_generator(train_generator, steps_per_epoch = int(len(X_train)/32), epochs=E, verbose=1,validation_data =validation_generator, validation_steps= int(len(X_validation)/32))
   print('Done Training')
   saveModel(model)
 
