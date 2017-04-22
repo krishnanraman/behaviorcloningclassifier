@@ -15,12 +15,13 @@ Thus, I figured an autonomous driver would also need to learn a very small set o
 
 From careful inspection of the udacity dataset (driving_log.csv), it is clear that 
 
-a. majority of the steering angles are 0, followed by a large proportion close to 0, and a very small number close to 1.
-b. the 0 degree steering sangle is vastly over-represented ( over 4K samples, in an 8K dataset, ie. > 50% )
-c. it is important to distinguish between small turns i.e. -0.1 degree and -0.3 degree must be in separate buckets
-d. is is however not crucial to distinguish between large angles i.e. a single bucket will suffice for [-0.4, -1]
+*  majority of the steering angles are 0, followed by a large proportion close to 0, and a very small number close to 1.
+*  the 0 degree steering sangle is vastly over-represented ( over 4K samples, in an 8K dataset, ie. > 50% )
+*  it is important to distinguish between small turns i.e. -0.1 degree and -0.3 degree must be in separate buckets
+*  is is however not crucial to distinguish between large angles i.e. a single bucket will suffice for [-0.4, -1]
 
 Based on these observations, I created 9 distinct buckets/classes -
+```
 classes = [
 [-1.001,-0.4],
 [-0.4,-0.2],
@@ -32,6 +33,10 @@ classes = [
 [0.2,0.4],
 [0.4,1.001],
 ]
+```
+
+Bijections
+==========
 
 I defined 2 simple bijections, mapping the steering angle <-> class label
 
@@ -158,7 +163,7 @@ The model will predict a 9-class numpy array. This one-hot array must then be co
 
 Step 7. Results
 ================
-<iframe  title="Results" width="640" height="360" src="https://github.com/krishnanraman/behaviorcloningclassifier/blob/master/result.mp4?autoplay=1" frameborder="0" allowfullscreen></iframe>
+<iframe  title="Results" width="640" height="360" src="https://www.youtube.com/watch?v=OSPpME79v2A?autoplay=1" frameborder="0" allowfullscreen></iframe>
 
 From the video, it is clear that while the vehicle is able to successfully complete several laps around the circular track, the drive is not "smooth" - this is because the model has learnt exactly 9 steering angles, so the turns are pretty sharp. The car appears to weave quite a bit because of these sharp turns. 
 
