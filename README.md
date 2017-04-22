@@ -81,18 +81,18 @@ The labrels are converted to one-hot numpy arrays using the bijections created a
 Image preprocessing is a single step cropping operation - we remove the sky & the floor portion of the image,
 followed by re-scaling the rest of the image into a compact 64by64 size to speed up learning.
 
-2a. Image Augmentation
+Image Augmentation
 ========================
-The crucial insight is to examine the angle - a nonzero angle can be negated corresponding to a flipped image.
+* The crucial insight is to examine the angle - a nonzero angle can be negated corresponding to a flipped image.
 The intuition here is - if a person is steering at 5 degrees to the left, that is equivalent to a -5 degree in the mirror-image.
 The mirror image is obtained by flipping the original. 
 Negation of camera angle must be following by re-applying the bijection, in order to find the new class label for the negated angle.
 
-2b. If the steering angle exceeds a threshold, say 0.15, we can use the left image to give us an additional (img,angle) tuple.
+* If the steering angle exceeds a threshold, say 0.15, we can use the left image to give us an additional (img,angle) tuple.
 The left image is adjusted by an empirical 0.27 degrees, so it simulates a harder left.
 Similarly if the steering angle exceeds - 0.15, we can use the right image to give us an additional (img,angle) tuple.
 
-2c. We store zero-steering and the non-zeros separately. 
+* We store zero-steering and the non-zeros separately. 
 After shuffling the dataset, a majority of the zeros are discarded.
 This is because over 50% of the dataset consists of zero-steering. 
 To normalize the distribution, we only retain 500 tuples ie. one-eighth of the original.
@@ -163,7 +163,7 @@ The model will predict a 9-class numpy array. This one-hot array must then be co
 
 Step 7. Results
 ================
-<iframe  title="Results" width="640" height="360" src="https://www.youtube.com/watch?v=OSPpME79v2A?autoplay=1" frameborder="0" allowfullscreen></iframe>
+Video: "https://www.youtube.com/watch?v=OSPpME79v2A?autoplay=1"
 
 From the video, it is clear that while the vehicle is able to successfully complete several laps around the circular track, the drive is not "smooth" - this is because the model has learnt exactly 9 steering angles, so the turns are pretty sharp. The car appears to weave quite a bit because of these sharp turns. 
 
