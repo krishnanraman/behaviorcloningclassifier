@@ -27,38 +27,24 @@ WIDTH = 64
 HEIGHT = 64
 CHANNELS = 3
 classes = [
-[-1.001,-0.8],
-[-0.8,-0.6],
-[-0.6,-0.4],
+[-1.001,-0.4],
 [-0.4,-0.2],
 [-0.2,-0.1],
-[-0.1,-0.08],
-[-0.08,-0.06],
-[-0.06,-0.04],
-[-0.04,-0.02],
-[-0.02,-0.001],
+[-0.1,-0.001],
 [-0.001,0.001],
-[0.001,0.02],
-[0.02,0.04],
-[0.04,0.06],
-[0.06,0.08],
-[0.08,0.1],
+[0.001,0.1],
 [0.1,0.2],
 [0.2,0.4],
-[0.4,0.6],
-[0.6,0.8],
-[0.8,1.001],
+[0.4,1.001],
 ]
 CLASSLABELS = len(classes)
 
 # convert the class label back to camera angle
-def classLabelToCamera(i):
-    boundary = classes[i]
-    noise = 0 #np.random.uniform(0, (boundary[1] - boundary[0])/10.0)
-    if np.random.random() < 0.5:
-        noise = -noise
-    return noise  + (boundary[0] + boundary[1])/2.0
-
+def classLabelToCamera(arr):
+  label = np.argmax(arr) # index of 1-hot array with the max value
+  boundary = classes[label]
+  midpoint = (boundary[0] + boundary[1])/2.0
+  return midpoint
 
 class SimplePIController:
     def __init__(self, Kp, Ki):
@@ -82,34 +68,22 @@ class SimplePIController:
 
 
 controller = SimplePIController(0.1, 0.002)
-set_speed = 10
+set_speed = 9
 controller.set_desired(set_speed)
 
 def preprocessImage(img):
-    crop_img = img[60:140:, :] # order of params y1:y2, x1:x2
-    return cv2.resize(crop_img, (WIDTH, HEIGHT))
+  return cv2.resize(img[60:140,:], (WIDTH, HEIGHT))
 
 @sio.on('telemetry')
 def telemetry(sid, data):
     if data:
-        # The current steering angle of the car
-        steering_angle = data["steering_angle"]
-        print("orig", steering_angle)
-
-        # The current throttle of the car
-        throttle = data["throttle"]
-
-        # The current speed of the car
-        speed = data["speed"]
-
-        # The current image from the center camera of the car
         imgString = data["image"]
+        speed = data["speed"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         img = np.asarray(image)
         image_array = preprocessImage(img)
         res = model.predict(image_array[None, :, :, :], batch_size=1)
-        classLabel = np.argmax(res)
-        steering_angle = classLabelToCamera(classLabel)
+        steering_angle = classLabelToCamera(res)
         throttle = controller.update(float(speed))
         print(steering_angle, throttle)
         send_control(steering_angle.__str__(), throttle.__str__())
