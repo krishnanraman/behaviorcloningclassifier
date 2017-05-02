@@ -6,7 +6,7 @@ My primary goals in this project were two-fold
 2. MINIMAL APPROACH - Use the fewest possible classes !!
 
 Reasons:
-All the writeups on Behavior Cloning ( See:
+All the writeups on Behavior Cloning ( See links below )
 https://medium.com/@ksakmann/behavioral-cloning-make-a-car-drive-like-yourself-dc6021152713
 
 https://medium.com/@fromtheast/you-dont-need-lots-of-data-udacity-behavioral-cloning-6d2d87316c52
@@ -17,8 +17,7 @@ https://medium.com/udacity/how-udacitys-self-driving-car-students-approach-behav
 
 https://medium.com/@KunfengChen/training-and-validation-loss-mystery-in-behavioral-cloning-for-cnn-from-udacity-sdc-project-3-dfe3eda596ba
 
-)
-indicat this is a regression problem, to be solved using a powerful DNN regression setup,
+indicate this is a regression problem, to be solved using a powerful DNN regression setup,
 such as NVIDIA, comma.ai, VGG etc. 
 So the goal is to learn a function f(image) => steering_angle, and since steering_angle is a continuous variate [0-360 degrees], regression seems natural.
 
