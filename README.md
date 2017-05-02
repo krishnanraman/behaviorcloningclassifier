@@ -6,7 +6,7 @@ My primary goals in this project were two-fold
 2. MINIMAL APPROACH - Use the fewest possible classes !!
 
 Reasons:
-All the writeups on Behavior Cloning ( See links below )
+All the writeups on Behavior Cloning indicate this is a regression problem ( See links below )
 
 https://medium.com/@ksakmann/behavioral-cloning-make-a-car-drive-like-yourself-dc6021152713
 
@@ -18,9 +18,7 @@ https://medium.com/udacity/how-udacitys-self-driving-car-students-approach-behav
 
 https://medium.com/@KunfengChen/training-and-validation-loss-mystery-in-behavioral-cloning-for-cnn-from-udacity-sdc-project-3-dfe3eda596ba
 
-indicate this is a regression problem, to be solved using a powerful DNN regression setup,
-such as NVIDIA, comma.ai, VGG etc. 
-So the goal is to learn a function f(image) => steering_angle, and since steering_angle is a continuous variate [0-360 degrees], regression seems natural.
+So the goal is to learn a function f(image) => steering_angle, and since steering_angle is a continuous variate [0-360 degrees], regression seems natural, to be solved using a powerful DNN regression setup, such as NVIDIA, comma.ai, VGG etc. 
 
 However, I am convinced that Behavior Cloning can be solved using a very simple (mnist) classifier with very few classes! 
 Driving around a circular track successfully involves mostly driving straight (steering angle = 0), occasionally making small adjustments at the turns ( steering angle == nonzero ). The non-zero steering angles are finite. The set of non-zero steering angles a human uses in practice is quite small, such as +5, -5, +15, -15, +25, -25. 
