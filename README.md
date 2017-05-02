@@ -7,6 +7,7 @@ My primary goals in this project were two-fold
 
 Reasons:
 All the writeups on Behavior Cloning ( See links below )
+
 https://medium.com/@ksakmann/behavioral-cloning-make-a-car-drive-like-yourself-dc6021152713
 
 https://medium.com/@fromtheast/you-dont-need-lots-of-data-udacity-behavioral-cloning-6d2d87316c52
