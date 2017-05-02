@@ -189,13 +189,19 @@ It is not necessary to use the heavy machinery ( VGG, NVidia architecture, comma
 
 Hypothesis
 ==========
- We claim that the number of classes c is a function of the width w of the racetrack and velocity v of the racecar, given a maximum constant track curvature k ( straight tracks are not interesting since you'd need to learn only one steering angle ie. zero degrees, so C=1)
- In particular, c = f(w,v) given a max fixed k.
+
+```
+We claim that the number of classes c is a function of the width w of the racetrack and velocity v of the racecar, given a maximum constant track curvature k ( straight tracks are not interesting since you'd need to learn only one steering angle ie. zero degrees, so C=1)
+ 
+In particular, c = f(w,v) given a max fixed k.
  c is inversely proportional to w
  c is directly proportional to v, probably poly/exponential in v
- 
+
+
+``` 
  The reasons being:
- ...
+ 
+```
  
  1. If you have a very wide lane (large w), you don't need to learn anything at all. C=1 would suffice. The only class of interest would be
  f(image) = 0. ie. no matter what image is presented to you, simply output the steering angle of 0 degrees. Since the lane is super-wide, the car would keep going & eventually finish the lap.
@@ -207,5 +213,5 @@ Hypothesis
 4. Notice that I needed to learn 9 classes i.e. C=9. i.e. Nine distinct steering angles were learnt. The w was real-size (mapped to an actual real-life racetrack). The v was around 9 mph with some throttle ( see drive.py for details ). I tried to exercise my classifier at 15mph & the car jumped out of the track quite soon :( So yeah, faster speed means more classes. If you drive at a reasonable 40 mph in the curvy udacity track, the number of classes would go up to thousands imo, so c grows quite fast & grows non-linearly.
 
 5. Its hard to reason about high k. For one, its not very useful - you don't have roads with super-crazy curves because drivers/cars wouldn't be able to drive reasonably well under such conditions. Best to hold k at a large enough max to accomodate both straight & circular tracks & reasonably curved tracks.
- ...
-
+ 
+```
