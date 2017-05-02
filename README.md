@@ -1,13 +1,26 @@
 PROCESS
 ========
 
-My primary goals in this preoject were two-fold
-1. Use a classifier, NOT a regressor !
-2. Use the fewest possible classes
+My primary goals in this project were two-fold
+1. NOVEL APPROACH - Use a classifier, NOT a regressor !
+2. MINIMAL APPROACH - Use the fewest possible classes !!
 
 Reasons:
-All the writeups on Behavior Cloning indicated this was a regression problem, to be solved using a powerful DNN regression setup,
+All the writeups on Behavior Cloning ( See:
+https://medium.com/@ksakmann/behavioral-cloning-make-a-car-drive-like-yourself-dc6021152713
+
+https://medium.com/@fromtheast/you-dont-need-lots-of-data-udacity-behavioral-cloning-6d2d87316c52
+
+https://medium.com/udacity/udacity-self-driving-car-nanodegree-project-3-behavioral-cloning-446461b7c7f9
+
+https://medium.com/udacity/how-udacitys-self-driving-car-students-approach-behavioral-cloning-5ffbfd2979e5
+
+https://medium.com/@KunfengChen/training-and-validation-loss-mystery-in-behavioral-cloning-for-cnn-from-udacity-sdc-project-3-dfe3eda596ba
+
+)
+indicat this is a regression problem, to be solved using a powerful DNN regression setup,
 such as NVIDIA, comma.ai, VGG etc. 
+So the goal is to learn a function f(image) => steering_angle, and since steering_angle is a continuous variate [0-360 degrees], regression seems natural.
 
 However, I am convinced that Behavior Cloning can be solved using a very simple (mnist) classifier with very few classes! 
 Driving around a circular track successfully involves mostly driving straight (steering angle = 0), occasionally making small adjustments at the turns ( steering angle == nonzero ). The non-zero steering angles are finite. The set of non-zero steering angles a human uses in practice is quite small, such as +5, -5, +15, -15, +25, -25. 
